@@ -2,7 +2,7 @@ import { tool } from "ai";
 import { z } from "zod";
 
 const SCRAPE_TIMEOUT_MS = 60_000;
-const MAX_CONTENT_LENGTH = 30_000;
+const MAX_CONTENT_LENGTH = 12_000;
 
 const firecrawlScrapeInputSchema = z.object({
   url: z.string().url().describe("The URL of the website to scrape"),
@@ -10,7 +10,7 @@ const firecrawlScrapeInputSchema = z.object({
     .array(z.enum(["markdown", "html", "screenshot", "links"]))
     .optional()
     .describe(
-      "Output formats to request. Default: ['markdown', 'screenshot', 'links']",
+      "Output formats to request. Default: ['markdown', 'screenshot']",
     ),
   onlyMainContent: z
     .boolean()
@@ -58,7 +58,7 @@ IMPORTANT: The FIRECRAWL_API_KEY environment variable must be set.`,
 
     const requestBody: Record<string, unknown> = {
       url,
-      formats: formats ?? ["markdown", "screenshot", "links"],
+      formats: formats ?? ["markdown", "screenshot"],
       onlyMainContent: onlyMainContent ?? true,
       waitFor: waitFor ?? 3000,
     };
@@ -145,7 +145,7 @@ IMPORTANT: The FIRECRAWL_API_KEY environment variable must be set.`,
         screenshot: screenshot ?? null,
         markdown,
         truncated,
-        links: links?.slice(0, 50) ?? [],
+        links: links?.slice(0, 15) ?? [],
         metadata: metadata
           ? {
               title: metadata.title ?? null,
@@ -155,7 +155,7 @@ IMPORTANT: The FIRECRAWL_API_KEY environment variable must be set.`,
               language: metadata.language ?? null,
             }
           : null,
-        extractedImages: [...new Set(extractedImages)].slice(0, 20),
+        extractedImages: [...new Set(extractedImages)].slice(0, 5),
       };
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);

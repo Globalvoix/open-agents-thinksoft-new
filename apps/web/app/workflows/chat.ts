@@ -480,6 +480,8 @@ export async function runAgentWorkflow(options: Options) {
   let exhaustedMaxSteps = false;
   let totalUsage: LanguageModelUsage | undefined;
   let finalFinishReason: FinishReason | undefined;
+  let consecutiveLengthStops = 0;
+  const MAX_CONSECUTIVE_LENGTH_STOPS = 3;
   let streamClosed = false;
   let workflowStatus: WorkflowRunStatus = "completed";
   let caughtError: unknown;
@@ -527,8 +529,21 @@ export async function runAgentWorkflow(options: Options) {
           : result.stepUsage;
       }
 
+      if (result.finishReason === "length") {
+        consecutiveLengthStops++;
+        if (consecutiveLengthStops >= MAX_CONSECUTIVE_LENGTH_STOPS) {
+          console.warn(
+            `[workflow] Breaking after ${MAX_CONSECUTIVE_LENGTH_STOPS} consecutive length stops — model may be stuck`,
+          );
+          break;
+        }
+      } else {
+        consecutiveLengthStops = 0;
+      }
+
       const shouldContinue =
-        result.finishReason === "tool-calls" &&
+        (result.finishReason === "tool-calls" ||
+          result.finishReason === "length") &&
         !shouldPauseForToolInteraction(
           result.responseMessage?.parts ?? pendingAssistantResponse.parts,
         );

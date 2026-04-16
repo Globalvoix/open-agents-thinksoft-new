@@ -144,6 +144,16 @@ Open Harness (formerly Open Agents) is a Next.js 16 Bun monorepo that provides a
 - **System prompt framer-motion consistency**: Removed framer-motion from scaffolding step, HeroUI install, package examples, and visual effects section. All now consistently direct to CSS animations on first build with framer-motion reserved for follow-up iterations
 - **New anti-patterns 13-14**: Banned "Live Preview" placeholder pages and hardcoded localhost URLs in generated content
 
+### 15. Code Generation "2 Files Only" Fix (`packages/agent/tools/firecrawl.ts`, `packages/agent/system-prompt.ts`, `apps/web/app/workflows/chat.ts`)
+- **Root causes identified**:
+  1. Firecrawl scrape returned up to 30K chars of markdown + 50 links + 20 images, consuming massive context budget
+  2. No explicit minimum file count — model assumed 1-2 files = "done"
+  3. `finishReason: "length"` (output token exhaustion) stopped the workflow loop entirely
+- **Fix A — Context budget** (`firecrawl.ts`): Reduced `MAX_CONTENT_LENGTH` from 30,000 to 12,000 chars; links from 50→15; images from 20→5; default formats changed from `["markdown", "screenshot", "links"]` to `["markdown", "screenshot"]`
+- **Fix B — Minimum deliverable** (`system-prompt.ts`): Added "Minimum Deliverable" section requiring at least 5 files (package.json, layout, globals.css, page, components). Placeholder pages explicitly called out as failures
+- **Fix C — Design brief workflow** (`system-prompt.ts`): Updated Firecrawl competitor workflow to use `think` tool to extract a concise design brief from scraped data, then discard the raw content — prevents context bloat from carrying 12K of raw markdown through subsequent tool calls
+- **Fix D — Length continuation** (`chat.ts`): Workflow loop now continues on `finishReason: "length"` (output token exhaustion) instead of stopping. Added progress guard: after 3 consecutive `finishReason: "length"` stops, breaks to prevent infinite loops
+
 ## Architecture
 - **Frontend**: Next.js 16 App Router, React, Tailwind CSS
 - **Backend**: Next.js API routes + Vercel Workflows
