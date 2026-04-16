@@ -19,3 +19,4 @@ export { skillTool, type SkillToolInput } from "./skill";
 export { webFetchTool } from "./fetch";
 export { embedTool } from "./embed";
 export { thinkTool } from "./think";
+export { firecrawlScrapeTool, firecrawlSearchTool } from "./firecrawl";

@@ -124,6 +124,19 @@ Open Harness (formerly Open Agents) is a Next.js 16 Bun monorepo that provides a
 - **Technical Philosophy** (OpenHands/Torvalds): Good taste (eliminate edge cases > add conditionals), pragmatism (solve real problems), simplicity (three levels of indentation max), never break what works, data structures first
 - Sources: OpenHands CodeAct agent, OpenCode (anomalyco), Goose (AAIF), vercel-labs/open-agents
 
+### 13. Firecrawl Competitor Research & Design Cloning (`packages/agent/tools/firecrawl.ts`, `packages/agent/system-prompt.ts`)
+- **Two new tools** registered in the agent toolset:
+  - `firecrawl_scrape`: Scrapes a website using the Firecrawl API to extract screenshots, markdown content, images, icons, metadata, and links
+  - `firecrawl_search`: Searches the web via Firecrawl to find competitor websites by category
+- **Requires `FIRECRAWL_API_KEY`** environment secret — gracefully skips if not set
+- **Mandatory first-prompt workflow**: When a user's first message describes a product/app/website to build, the agent automatically:
+  1. Identifies the product category and top competitors
+  2. Uses `firecrawl_search` to find the competitor's website
+  3. Uses `firecrawl_scrape` to screenshot and extract content/images/structure from the competitor
+  4. Clones the competitor's design patterns (layout, colors, typography, spacing) while modifying branding, names, and copy to match the user's product
+- The Firecrawl tools execute via `curl` in the sandbox environment (same pattern as `webFetchTool`)
+- Screenshot URLs, extracted images, OG images, and favicons from the competitor are made available for the agent to use as visual references
+
 ## Architecture
 - **Frontend**: Next.js 16 App Router, React, Tailwind CSS
 - **Backend**: Next.js API routes + Vercel Workflows

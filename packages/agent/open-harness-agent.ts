@@ -15,6 +15,8 @@ import {
   bashTool,
   editFileTool,
   embedTool,
+  firecrawlScrapeTool,
+  firecrawlSearchTool,
   globTool,
   grepTool,
   readFileTool,
@@ -78,6 +80,8 @@ const tools = {
   web_fetch: webFetchTool,
   embed: embedTool,
   think: thinkTool,
+  firecrawl_scrape: firecrawlScrapeTool,
+  firecrawl_search: firecrawlSearchTool,
 } satisfies ToolSet;
 
 export const openHarnessAgent = new ToolLoopAgent({
