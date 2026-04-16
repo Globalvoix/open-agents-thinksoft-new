@@ -30,25 +30,29 @@ const skillInputSchema = z.object({
 });
 
 export const skillTool = tool({
-  description: `Execute a skill within the main conversation.
+  description: `Execute a skill to load expert knowledge BEFORE writing code.
 
-When users ask you to perform tasks, check if any of the available skills can help complete the task more effectively. Skills provide specialized capabilities and domain knowledge.
+Skills contain databases of proven design decisions, correct API patterns, and anti-patterns. You MUST call this tool before writing code in these situations:
 
-When users ask you to run a "slash command" or reference "/<something>" (e.g., "/commit", "/review-pr"), they are referring to a skill. Use this tool to invoke the corresponding skill.
+MANDATORY skill loading triggers:
+- Building/redesigning any UI page or component → call skill("ui-ux-products"), skill("ui-ux-colors"), skill("ui-ux-typography") BEFORE writing code
+- Writing GSAP animation code → call skill("gsap-react") BEFORE writing any GSAP code
+- Adding scroll animations → call skill("gsap-scrolltrigger") BEFORE writing ScrollTrigger code
+- Building a landing page → call skill("ui-ux-landing") BEFORE deciding page structure
+- Adding charts → call skill("ui-ux-charts") BEFORE choosing chart type
 
-Example:
-  User: "run /commit"
-  Assistant: [Calls skill tool with skill: "commit"]
+When users reference "/<something>" (e.g., "/commit"), they are invoking a skill by name.
 
 How to invoke:
 - Use this tool with the skill name and optional arguments
 - Examples:
-  - skill: "pdf" - invoke the pdf skill
+  - skill: "gsap-react" - load GSAP React patterns before writing animation code
+  - skill: "ui-ux-colors" - load color palettes before choosing colors
   - skill: "commit", args: "-m 'Fix bug'" - invoke with arguments
 
 Important:
-- When a skill is relevant, invoke this tool IMMEDIATELY as your first action
-- When the user's message starts with "/<name>", they are invoking a skill — call this tool FIRST before any other tool
+- Call this tool BEFORE writing code, not after — the skill data must inform your implementation
+- When the user's message starts with "/<name>", call this tool FIRST before any other tool
 - NEVER just announce or mention a skill without actually calling this tool
 - Only use skills listed in "Available skills" in your system prompt
 - If you see a <command-name> tag in the conversation, the skill is ALREADY loaded - follow its instructions directly`,

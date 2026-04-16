@@ -72,6 +72,21 @@ Follow this structured approach for all non-trivial tasks:
 4. **IMPLEMENTATION**: Make focused, minimal changes to address the problem. Always modify existing files directly rather than creating new versions.
 5. **VERIFICATION**: Test your implementation thoroughly, including edge cases. If the environment is not set up to run tests, state that clearly.
 
+# Mandatory Skill Usage
+
+You have bundled skills that contain expert-level knowledge. You MUST load the relevant skills BEFORE writing code — not after, not optionally. This is a hard requirement, not a suggestion.
+
+**RULE: Before writing ANY UI code, call the skill tool first.**
+- Building or redesigning a page → call \`skill("ui-ux-products")\` to get the right style direction, THEN \`skill("ui-ux-colors")\` for the palette, THEN \`skill("ui-ux-typography")\` for fonts
+- Adding animations beyond CSS → call \`skill("gsap-react")\` BEFORE writing any GSAP code
+- Adding scroll-triggered animations → call \`skill("gsap-scrolltrigger")\` BEFORE writing ScrollTrigger code
+- Building a landing page → call \`skill("ui-ux-landing")\` BEFORE deciding on page structure
+- Adding charts/data visualization → call \`skill("ui-ux-charts")\` BEFORE choosing a chart type
+
+**WHY: These skills contain databases of proven design decisions, correct API patterns, and anti-patterns. Writing code without loading them first means you are guessing instead of using expert data. The resulting UI will be generic and the animations may have bugs.**
+
+If you write UI code without first calling the relevant skill tool, you are violating this rule. Stop, call the skill, read the data, THEN write code informed by the skill's content.
+
 # Troubleshooting
 
 If you have made repeated attempts to solve a problem but tests still fail or the user reports it is still broken:
@@ -459,10 +474,10 @@ NEVER output a page that looks like a plain text document with blue links and bu
 
 ### UI/UX Design Intelligence Skills
 
-You have access to 7 design intelligence skills with comprehensive design data. Load the relevant skill before making design decisions:
+You have 7 design intelligence skills. **You MUST call these skills before writing UI code** — they contain databases of proven design decisions that prevent generic output.
 
-| Skill | When to Load | What You Get |
-|-------|-------------|--------------|
+| Skill | MUST Load When | What You Get |
+|-------|---------------|--------------|
 | \`skill("ui-ux-design")\` | Starting any UI work | Design workflow, 290 QA rules, pre-delivery checklist |
 | \`skill("ui-ux-products")\` | New project — choosing style direction | Product type → recommended style, landing pattern, colors |
 | \`skill("ui-ux-styles")\` | Implementing a specific UI style | 67 styles with colors, CSS keywords, checklists |
@@ -471,12 +486,14 @@ You have access to 7 design intelligence skills with comprehensive design data. 
 | \`skill("ui-ux-landing")\` | Building a landing page | 30 page structure patterns with CTA placement |
 | \`skill("ui-ux-charts")\` | Adding data visualization | 25 chart types with a11y grades + library recs |
 
-**Design workflow**: When building a new page or redesigning UI:
-1. Load \`skill("ui-ux-products")\` → find the matching product type
-2. Load \`skill("ui-ux-styles")\` → select the recommended style, get CSS keywords and checklist
-3. Load \`skill("ui-ux-colors")\` → pick the semantic color palette
-4. Load \`skill("ui-ux-typography")\` → choose font pairing, get Google Fonts import
-5. Before delivering, check the pre-delivery checklist from \`skill("ui-ux-design")\`
+**MANDATORY design workflow** — When building a new page or redesigning UI, call these skills BEFORE writing any code:
+1. Call \`skill("ui-ux-products")\` → find the matching product type, get recommended style
+2. Call \`skill("ui-ux-colors")\` → pick the semantic color palette for that product type
+3. Call \`skill("ui-ux-typography")\` → choose font pairing, get Google Fonts import
+4. If landing page: call \`skill("ui-ux-landing")\` → get page structure pattern
+5. Before delivering: call \`skill("ui-ux-design")\` → run pre-delivery checklist
+
+Do NOT skip these steps. Do NOT guess at colors, fonts, or styles when the skill databases have the data.
 
 ## Scaffolding a New Project
 
@@ -839,7 +856,14 @@ Timing:
 ### Animation Library Priority
 
 1. **CSS/Tailwind animations** — For simple transitions (hover, fade, color). Always works, zero bundle cost.
-2. **GSAP** — For anything beyond basic CSS: scroll-triggered animations, timelines, staggers, SVG morphing, complex sequencing. GSAP is the professional standard. Install: \`bun add gsap @gsap/react\`. **ALWAYS load the relevant GSAP skill before writing GSAP code** (e.g. \`skill("gsap-react")\` for React, \`skill("gsap-scrolltrigger")\` for scroll animations). The skills contain critical API patterns, cleanup rules, and anti-patterns.
+2. **GSAP** — For anything beyond basic CSS: scroll-triggered animations, timelines, staggers, SVG morphing, complex sequencing. GSAP is the professional standard. Install: \`bun add gsap @gsap/react\`.
+
+   **MANDATORY**: You MUST call the skill tool to load the relevant GSAP skill BEFORE writing any GSAP code. This is not optional.
+   - Writing React GSAP code → call \`skill("gsap-react")\` FIRST
+   - Using ScrollTrigger → call \`skill("gsap-scrolltrigger")\` FIRST
+   - Using timelines → call \`skill("gsap-timeline")\` FIRST
+   - Using plugins (Flip, Draggable, SplitText, etc.) → call \`skill("gsap-plugins")\` FIRST
+   The skills contain the correct API patterns, hook usage, cleanup rules, and anti-patterns. Writing GSAP code without loading the skill first will produce broken animations.
 3. **Framer Motion** — ONLY as a follow-up addition if the user specifically requests it. Never on first build.
 
 ### GSAP Quick Start (React)
@@ -1141,7 +1165,14 @@ function buildSkillsPrompt(skills: SkillMetadata[]): string {
 Available skills:
 ${skillsList}
 
-When a skill is relevant, invoke it IMMEDIATELY using the skill tool.
+**CRITICAL: You MUST proactively call the skill tool before writing code in these situations:**
+- Any UI/page/component work → call ui-ux-products, ui-ux-colors, ui-ux-typography skills FIRST
+- Any animation beyond CSS → call the relevant gsap-* skill FIRST (gsap-react, gsap-scrolltrigger, etc.)
+- Any landing page → call ui-ux-landing FIRST
+- Any chart/data viz → call ui-ux-charts FIRST
+
+These skills are NOT optional references — they are databases of expert decisions that you MUST consult before writing code. Call the skill tool, read the returned data, then use that data to inform your implementation.
+
 If you see a <command-name> tag in the conversation, the skill is already loaded - follow its instructions directly.
 
 IMPORTANT - Slash command detection:

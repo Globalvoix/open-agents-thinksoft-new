@@ -180,6 +180,14 @@ Open Harness (formerly Open Agents) is a Next.js 16 Bun monorepo that provides a
 - **System prompt update**: Design Quality Standards section now includes a table of all 7 UI/UX skills with usage instructions. Agent is instructed to follow a design workflow: products → styles → colors → typography → checklist.
 - **Key rules enforced**: No emoji icons (use SVG), 4.5:1 contrast ratio, 44pt touch targets, 4/8dp spacing rhythm, semantic color tokens, pre-delivery checklist
 
+### 18. Mandatory Skill Usage Enforcement (`packages/agent/system-prompt.ts`, `packages/agent/tools/skill.ts`)
+- **Root cause**: Agent ignored bundled skills because instructions were suggestive, not mandatory. Agent would write UI/animation code without calling `skill()` first.
+- **Fix A — Core prompt rule** (`system-prompt.ts`): Added "Mandatory Skill Usage" section near the top of the system prompt (after Problem-Solving Workflow). Uses MUST/BEFORE/FIRST language with specific triggers: UI work → ui-ux-products/colors/typography, animations → gsap-react/scrolltrigger, landing pages → ui-ux-landing, charts → ui-ux-charts.
+- **Fix B — LAW 8 strengthened** (`system-prompt.ts`): GSAP section now says "MANDATORY: You MUST call the skill tool" with itemized skill-per-use-case list instead of a parenthetical suggestion.
+- **Fix C — UI/UX section strengthened** (`system-prompt.ts`): Design workflow changed from "Design workflow" to "MANDATORY design workflow" with "call these skills BEFORE writing any code" language.
+- **Fix D — Skills section reinforced** (`system-prompt.ts`): Bottom skills section now has a "CRITICAL" block repeating the mandatory triggers.
+- **Fix E — Tool description rewritten** (`skill.ts`): `skillTool` description changed from "Execute a skill within the main conversation" to "Execute a skill to load expert knowledge BEFORE writing code" with "MANDATORY skill loading triggers" list at the top of the tool description.
+
 ## Architecture
 - **Frontend**: Next.js 16 App Router, React, Tailwind CSS
 - **Backend**: Next.js API routes + Vercel Workflows
