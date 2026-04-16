@@ -325,6 +325,18 @@ Always use a component library. Do NOT build UIs from raw divs and spans.
 
 ## Animations — Critical Rules (Read Every Word)
 
+### DEFAULT: DO NOT USE framer-motion ON FIRST BUILD
+When building a new page or project for the first time, DO NOT use framer-motion at all. Use ONLY Tailwind CSS animations.
+This is the #1 cause of blank white pages in production. framer-motion requires JavaScript to run, and if "use client" is missing or the JS bundle fails to load, the entire page becomes permanently invisible.
+
+**For the initial build, use ONLY these CSS-based animations:**
+- className="animate-in fade-in duration-700" (fade in)
+- className="animate-in fade-in slide-in-from-bottom-4 duration-700" (slide up + fade)
+- className="animate-in fade-in slide-in-from-left-4 duration-500" (slide from left)
+- CSS transitions for hover: className="transition-all duration-200 hover:shadow-lg hover:-translate-y-1"
+
+Only add framer-motion in a FOLLOW-UP iteration after the user confirms the page loads correctly.
+
 ### The "use client" Requirement — NON-NEGOTIABLE
 ANY component that uses framer-motion (motion.div, motion.section, AnimatePresence, useInView, useAnimation, etc.) MUST have "use client" as the very first line of the file. Without it, the component renders as a React Server Component, JavaScript never runs, and all elements stay invisible at opacity: 0 permanently. This is the single most common cause of blank pages.
 
@@ -396,9 +408,10 @@ Use Tailwind CSS animate (pure CSS, no JS needed):
 - Hero section entrance animations
 - Any content that must be visible on first paint
 - Simple fade-ins and slide-ups
+- ALL animations on the FIRST BUILD of any page
 
 Use framer-motion (needs JS and "use client"):
-- Scroll-triggered reveals for below-the-fold sections
+- Scroll-triggered reveals for below-the-fold sections (ONLY in follow-up iterations)
 - Hover interactions (whileHover)
 - Complex sequenced animations
 - Drag interactions, layout animations, AnimatePresence exit animations
@@ -815,9 +828,26 @@ The following are strictly forbidden. If you find yourself producing any of thes
 
 11. The invisible page — using framer-motion initial={{ opacity: 0 }} without "use client" or without a matching animate/whileInView prop. This is the #1 cause of blank white pages. The entire page content exists in the DOM but is permanently invisible because the SSR-rendered opacity:0 style never gets animated away. Check every single motion element before shipping.
 
+12. Using framer-motion on the first build — NEVER use framer-motion when building a page for the first time. Use CSS animations only (Tailwind animate-in classes). framer-motion can be added in a follow-up iteration after verifying the page renders correctly. This is the safest way to prevent blank pages.
+
 ---
 
-## LAW 10 — Before Finalizing Any Design
+## LAW 10 — Mandatory Preview Verification
+
+After building or modifying any page, you MUST verify the preview is not blank:
+
+1. **Open the dev server URL** in the sandbox browser or use bash to curl the page
+2. **Check the response** is not empty — run: \`curl -s http://localhost:3000 | head -50\` (adjust port as needed)
+3. **If the page is blank or shows only a white screen:**
+   - Search for \`initial={{ opacity: 0\` in ALL files — if found without a matching \`animate\` or \`whileInView\`, fix immediately
+   - Search for \`motion.\` imports without \`"use client"\` at the top of the file — add it
+   - Remove ALL framer-motion usage and replace with CSS animations
+   - Re-verify the page renders content
+4. **Never deliver a blank page** — if you cannot fix it, remove all animation code and ship a static version
+
+---
+
+## LAW 11 — Before Finalizing Any Design
 
 Run this checklist before calling a design complete:
 
