@@ -67,6 +67,8 @@ export interface SkillMetadata {
   filename: string;
   /** Skill options from frontmatter */
   options: SkillOptions;
+  /** Pre-loaded content for bundled skills (no sandbox read needed) */
+  bundledContent?: string;
 }
 
 /**

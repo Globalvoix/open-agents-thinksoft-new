@@ -1,4 +1,4 @@
-import { discoverSkills } from "@open-harness/agent";
+import { discoverSkills, allBundledSkills } from "@open-harness/agent";
 import { connectSandbox } from "@open-harness/sandbox";
 import { getUserGitHubToken } from "@/lib/github/user-token";
 import { DEFAULT_SANDBOX_PORTS } from "@/lib/sandbox/config";
@@ -14,6 +14,16 @@ type DiscoveredSkills = Awaited<ReturnType<typeof discoverSkills>>;
 type ConnectedSandbox = Awaited<ReturnType<typeof connectSandbox>>;
 type ActiveSandboxState = NonNullable<SessionRecord["sandboxState"]>;
 
+function mergeWithBundledSkills(skills: DiscoveredSkills): DiscoveredSkills {
+  const existingNames = new Set(skills.map((s) => s.name.toLowerCase()));
+  return [
+    ...skills,
+    ...allBundledSkills.filter(
+      (s) => !existingNames.has(s.name.toLowerCase()),
+    ),
+  ];
+}
+
 async function loadSessionSkills(
   sessionId: string,
   sandboxState: ActiveSandboxState,
@@ -21,17 +31,15 @@ async function loadSessionSkills(
 ): Promise<DiscoveredSkills> {
   const cachedSkills = await getCachedSkills(sessionId, sandboxState);
   if (cachedSkills !== null) {
-    return cachedSkills;
+    return mergeWithBundledSkills(cachedSkills);
   }
 
-  // Discover project-level skills from the sandbox working directory plus
-  // global skills installed outside the repo working tree.
-  // TODO: Optimize if this becomes a bottleneck (~20ms no skills, ~130ms with 5 skills)
   const skillDirs = await getSandboxSkillDirectories(sandbox);
 
   const discoveredSkills = await discoverSkills(sandbox, skillDirs);
-  await setCachedSkills(sessionId, sandboxState, discoveredSkills);
-  return discoveredSkills;
+  const merged = mergeWithBundledSkills(discoveredSkills);
+  await setCachedSkills(sessionId, sandboxState, merged);
+  return merged;
 }
 
 export async function createChatRuntime(params: {

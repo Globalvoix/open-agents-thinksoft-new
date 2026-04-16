@@ -154,6 +154,20 @@ Open Harness (formerly Open Agents) is a Next.js 16 Bun monorepo that provides a
 - **Fix C — Design brief workflow** (`system-prompt.ts`): Updated Firecrawl competitor workflow to use `think` tool to extract a concise design brief from scraped data, then discard the raw content — prevents context bloat from carrying 12K of raw markdown through subsequent tool calls
 - **Fix D — Length continuation** (`chat.ts`): Workflow loop now continues on `finishReason: "length"` (output token exhaustion) instead of stopping. Added progress guard: after 3 consecutive `finishReason: "length"` stops, breaks to prevent infinite loops
 
+### 16. GSAP Animation Skills (`packages/agent/skills/bundled/gsap.ts`, `packages/agent/tools/skill.ts`, `packages/agent/system-prompt.ts`)
+- **8 official GSAP skills** bundled with the agent, sourced from https://github.com/greensock/gsap-skills:
+  - `gsap-core` — Tweens, easing, stagger, defaults, transforms, autoAlpha, matchMedia
+  - `gsap-timeline` — Timelines, position parameter, labels, nesting, playback control
+  - `gsap-scrolltrigger` — ScrollTrigger, pinning, scrub, triggers, batch, refresh
+  - `gsap-plugins` — Flip, Draggable, SplitText, ScrollSmoother, DrawSVG, MorphSVG, MotionPath
+  - `gsap-react` — useGSAP hook, refs, context, cleanup, SSR
+  - `gsap-utils` — clamp, mapRange, snap, toArray, wrap, pipe, distribute
+  - `gsap-performance` — Transforms, will-change, batching, quickTo
+  - `gsap-frameworks` — Vue, Svelte lifecycle, scoping, cleanup
+- **Bundled skills architecture**: New `bundledContent` field on `SkillMetadata` allows skills to ship with the agent package instead of requiring sandbox filesystem access. The skill tool checks `bundledContent` first; if present, serves it directly without reading from sandbox.
+- **Merge logic**: Both the chat runtime (`apps/web/app/api/chat/_lib/runtime.ts`) and skills API route (`apps/web/app/api/sessions/[sessionId]/skills/route.ts`) merge bundled skills with discovered sandbox skills, with discovered skills taking priority. Bundled skills are always available regardless of cache state.
+- **System prompt update**: LAW 8 (Motion Design) now prioritizes GSAP over Framer Motion for animations. Includes a GSAP Quick Start code block for React and lists all 8 available skill names. Agent is instructed to call `skill("gsap-react")` etc. before writing GSAP code.
+
 ## Architecture
 - **Frontend**: Next.js 16 App Router, React, Tailwind CSS
 - **Backend**: Next.js API routes + Vercel Workflows

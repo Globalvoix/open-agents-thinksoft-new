@@ -813,12 +813,45 @@ Timing:
 - Entrance animations (scroll reveal): 400-600ms ease-out with slight upward Y movement (y: 20)
 - Page transitions: 200-250ms fade
 
-Framer Motion patterns (ONLY for follow-up iterations, never on first build):
-- Fade + slide up on scroll: initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-- Stagger children: use variants with staggerChildren: 0.08
-- Hover lift: whileHover={{ y: -2, boxShadow: "0 8px 30px rgba(0,0,0,0.12)" }}
-- Smooth layout changes: wrap with AnimatePresence, use layout prop
-- ALWAYS add "use client" at the top of any file using framer-motion
+### Animation Library Priority
+
+1. **CSS/Tailwind animations** — For simple transitions (hover, fade, color). Always works, zero bundle cost.
+2. **GSAP** — For anything beyond basic CSS: scroll-triggered animations, timelines, staggers, SVG morphing, complex sequencing. GSAP is the professional standard. Install: \`bun add gsap @gsap/react\`. **ALWAYS load the relevant GSAP skill before writing GSAP code** (e.g. \`skill("gsap-react")\` for React, \`skill("gsap-scrolltrigger")\` for scroll animations). The skills contain critical API patterns, cleanup rules, and anti-patterns.
+3. **Framer Motion** — ONLY as a follow-up addition if the user specifically requests it. Never on first build.
+
+### GSAP Quick Start (React)
+
+\`\`\`tsx
+"use client";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(useGSAP, ScrollTrigger);
+
+export function AnimatedSection() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  useGSAP(() => {
+    gsap.from(".card", {
+      y: 40, autoAlpha: 0, stagger: 0.1, duration: 0.6, ease: "power2.out",
+      scrollTrigger: { trigger: ".card", start: "top 85%" }
+    });
+  }, { scope: containerRef });
+  return <div ref={containerRef}>...</div>;
+}
+\`\`\`
+
+### Available GSAP Skills
+
+Load with \`skill("name")\` before writing GSAP code:
+- **gsap-core** — Tweens, easing, stagger, defaults, transforms, autoAlpha, matchMedia
+- **gsap-timeline** — Timelines, position parameter, labels, nesting, playback control
+- **gsap-scrolltrigger** — ScrollTrigger, pinning, scrub, triggers, batch, refresh
+- **gsap-plugins** — Flip, Draggable, SplitText, ScrollSmoother, DrawSVG, MorphSVG, MotionPath
+- **gsap-react** — useGSAP hook, refs, context, cleanup, SSR
+- **gsap-utils** — clamp, mapRange, snap, toArray, wrap, pipe, distribute
+- **gsap-performance** — Transforms, will-change, batching, quickTo
+- **gsap-frameworks** — Vue, Svelte lifecycle, scoping, cleanup
 
 ---
 

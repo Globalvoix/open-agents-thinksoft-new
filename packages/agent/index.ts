@@ -11,6 +11,7 @@ export {
   openHarnessAgent,
 } from "./open-harness-agent";
 // Skills exports
+export { allBundledSkills } from "./skills/bundled";
 export { discoverSkills, parseSkillFrontmatter } from "./skills/discovery";
 export { extractSkillBody, substituteArguments } from "./skills/loader";
 export type {

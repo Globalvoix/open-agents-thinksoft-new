@@ -1,4 +1,5 @@
-import { discoverSkills } from "@open-harness/agent";
+import { discoverSkills, allBundledSkills } from "@open-harness/agent";
+import type { SkillMetadata } from "@open-harness/agent";
 import { connectSandbox } from "@open-harness/sandbox";
 import {
   requireAuthenticatedUser,
@@ -13,6 +14,16 @@ import {
   hasRuntimeSandboxState,
   isSandboxUnavailableError,
 } from "@/lib/sandbox/utils";
+
+function mergeWithBundledSkills(skills: SkillMetadata[]): SkillMetadata[] {
+  const existingNames = new Set(skills.map((s) => s.name.toLowerCase()));
+  return [
+    ...skills,
+    ...allBundledSkills.filter(
+      (s) => !existingNames.has(s.name.toLowerCase()),
+    ),
+  ];
+}
 
 export type SkillSuggestion = {
   name: string;
@@ -65,7 +76,9 @@ export async function GET(req: Request, context: RouteContext) {
   if (!refresh) {
     const cachedSkills = await getCachedSkills(sessionId, sandboxState);
     if (cachedSkills !== null) {
-      return Response.json({ skills: toSkillSuggestions(cachedSkills) });
+      return Response.json({
+        skills: toSkillSuggestions(mergeWithBundledSkills(cachedSkills)),
+      });
     }
   }
 
@@ -77,7 +90,8 @@ export async function GET(req: Request, context: RouteContext) {
     const sandbox = await connectSandbox(sandboxState);
     const skillDirs = await getSandboxSkillDirectories(sandbox);
 
-    const skills = await discoverSkills(sandbox, skillDirs);
+    const discoveredSkills = await discoverSkills(sandbox, skillDirs);
+    const skills = mergeWithBundledSkills(discoveredSkills);
     await setCachedSkills(sessionId, sandboxState, skills);
 
     const response: SkillsResponse = { skills: toSkillSuggestions(skills) };

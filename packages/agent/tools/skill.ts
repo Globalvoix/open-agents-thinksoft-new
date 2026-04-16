@@ -78,27 +78,28 @@ Important:
       };
     }
 
-    // Load skill content via sandbox
-    const skillFilePath = path.join(foundSkill.path, foundSkill.filename);
-    let fileContent: string;
-    try {
-      fileContent = await sandbox.readFile(skillFilePath, "utf-8");
-    } catch (err) {
-      const message = err instanceof Error ? err.message : String(err);
-      return {
-        success: false,
-        error: `Failed to read skill file: ${message}`,
-      };
+    let content: string;
+
+    if (foundSkill.bundledContent) {
+      const body = extractSkillBody(foundSkill.bundledContent);
+      content = substituteArguments(body, args);
+    } else {
+      const skillFilePath = path.join(foundSkill.path, foundSkill.filename);
+      let fileContent: string;
+      try {
+        fileContent = await sandbox.readFile(skillFilePath, "utf-8");
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        return {
+          success: false,
+          error: `Failed to read skill file: ${message}`,
+        };
+      }
+
+      const body = extractSkillBody(fileContent);
+      const bodyWithDir = injectSkillDirectory(body, foundSkill.path);
+      content = substituteArguments(bodyWithDir, args);
     }
-
-    // Parse and extract body (skip frontmatter)
-    const body = extractSkillBody(fileContent);
-
-    // Inject skill directory for script access
-    const bodyWithDir = injectSkillDirectory(body, foundSkill.path);
-
-    // Substitute arguments
-    const content = substituteArguments(bodyWithDir, args);
 
     return {
       success: true,
