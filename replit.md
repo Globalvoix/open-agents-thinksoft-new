@@ -22,6 +22,7 @@ Open Harness (formerly Open Agents) is a Next.js 16 Bun monorepo that provides a
 ## Optional Secrets
 | Secret | Purpose |
 |--------|---------|
+| `FIRECRAWL_API_KEY` | Firecrawl API key for competitor research & design cloning |
 | `VERCEL_SANDBOX_BASE_SNAPSHOT_ID` | Pre-built snapshot with bun/jq/chromium (empty = clean Ubuntu) |
 | `GITHUB_APP_ID` | GitHub App for repo linking/PR features |
 | `GITHUB_APP_PRIVATE_KEY` | GitHub App private key |
@@ -79,7 +80,7 @@ Open Harness (formerly Open Agents) is a Next.js 16 Bun monorepo that provides a
 - Core stack: TypeScript + React + Tailwind CSS + Next.js (App Router)
 - **Component libraries**: Shadcn/ui (primary, via `npx shadcn@latest init/add`), HeroUI v3, Radix UI primitives
 - **Icons**: lucide-react (primary), react-icons; never emoji or text substitutes
-- **Animations**: framer-motion (primary), tailwindcss-animate; all interactions must be animated
+- **Animations**: CSS/Tailwind (tailwindcss-animate) on first build; framer-motion only in follow-up iterations after page renders correctly
 - **Images**: Unsplash URLs or picsum.photos for placeholders; next/image in Next.js projects
 - **3D/Visual**: @react-three/fiber + @react-three/drei for 3D scenes; @splinetool/react-spline for Spline embeds
 - **Package installation**: agent must run `bun add` (or npm/pnpm based on lock file) before using any package
@@ -95,7 +96,7 @@ Open Harness (formerly Open Agents) is a Next.js 16 Bun monorepo that provides a
 - **LAW 6 — Color System**: Exactly 9 color roles (background, surface, border, primary text, secondary text, accent, accent-hover, destructive, success)
 - **LAW 7 — Spacing System**: Section, container, card, grid, stack, and max-width rules using Tailwind scale
 - **LAW 8 — Motion Design**: Timing values, Framer Motion patterns, and which animations earn their place vs which distract
-- **LAW 9 — Anti-Pattern Blacklist**: 10 explicitly forbidden patterns (laptop mockups, lorem ipsum, rainbow gradient buttons, empty placeholder grids, wall of text, etc.)
+- **LAW 9 — Anti-Pattern Blacklist**: 14 explicitly forbidden patterns (laptop mockups, lorem ipsum, rainbow gradient buttons, empty placeholder grids, wall of text, framer-motion on first build, Live Preview placeholder pages, localhost URLs in generated content, etc.)
 - **LAW 10 — Pre-Delivery Checklist**: 14-point quality gate agent must pass before calling a design complete
 - Source: 59 world-class brand design systems from https://github.com/VoltAgent/awesome-design-md
 
@@ -134,8 +135,14 @@ Open Harness (formerly Open Agents) is a Next.js 16 Bun monorepo that provides a
   2. Uses `firecrawl_search` to find the competitor's website
   3. Uses `firecrawl_scrape` to screenshot and extract content/images/structure from the competitor
   4. Clones the competitor's design patterns (layout, colors, typography, spacing) while modifying branding, names, and copy to match the user's product
-- The Firecrawl tools execute via `curl` in the sandbox environment (same pattern as `webFetchTool`)
+- The Firecrawl tools execute via server-side `fetch()` in the Next.js process (API key never exposed to sandbox)
 - Screenshot URLs, extracted images, OG images, and favicons from the competitor are made available for the agent to use as visual references
+
+### 14. Dev Server & Code Editor Reliability Fixes
+- **EADDRINUSE fix** (`apps/web/app/api/sessions/[sessionId]/dev-server/route.ts`): Added `isDevServerPortInUse` check before launching — if port is already occupied by a known dev framework process (next/vite/astro/remix/nuxt/node), returns success with the preview URL instead of trying to start a conflicting server. Prevents crashes when the agent starts a server via `bash { detached: true }` before the user clicks "Run Dev Server"
+- **Retry logic** (`use-dev-server.ts`, `use-code-editor.ts`): Both hooks now retry up to 3 times (with 2s backoff) on 409/500 errors or network failures before showing an error. Handles transient sandbox connectivity issues gracefully
+- **System prompt framer-motion consistency**: Removed framer-motion from scaffolding step, HeroUI install, package examples, and visual effects section. All now consistently direct to CSS animations on first build with framer-motion reserved for follow-up iterations
+- **New anti-patterns 13-14**: Banned "Live Preview" placeholder pages and hardcoded localhost URLs in generated content
 
 ## Architecture
 - **Frontend**: Next.js 16 App Router, React, Tailwind CSS

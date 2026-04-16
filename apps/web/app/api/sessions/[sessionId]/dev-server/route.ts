@@ -802,6 +802,32 @@ async function stopDevServer(params: {
   return true;
 }
 
+async function isDevServerPortInUse(
+  sandbox: ConnectedSandbox,
+  port: number,
+): Promise<boolean> {
+  try {
+    const result = await sandbox.exec(
+      `curl -s -o /dev/null -w '%{http_code}' --max-time 2 http://127.0.0.1:${port}/ 2>/dev/null`,
+      sandbox.workingDirectory,
+      10_000,
+    );
+    const code = Number.parseInt(result.stdout.trim(), 10);
+    if (!result.success || Number.isNaN(code) || code <= 0) {
+      return false;
+    }
+
+    const psResult = await sandbox.exec(
+      `ps -eo pid=,args= | grep -E '(next|vite|astro|remix|nuxt|react-scripts|node)' | grep -v grep`,
+      sandbox.workingDirectory,
+      5_000,
+    );
+    return psResult.success && psResult.stdout.trim().length > 0;
+  } catch {
+    return false;
+  }
+}
+
 async function findDevServerCandidates(
   sandbox: ConnectedSandbox,
 ): Promise<DevServerCandidate[]> {
@@ -949,6 +975,12 @@ export async function POST(_req: Request, context: RouteContext) {
       port,
     });
     if (existingPid) {
+      await writePersistedDevServerTarget(sandbox, target);
+      return Response.json(buildDevServerResponse(sandbox, target));
+    }
+
+    const portOccupied = await isDevServerPortInUse(sandbox, port);
+    if (portOccupied) {
       await writePersistedDevServerTarget(sandbox, target);
       return Response.json(buildDevServerResponse(sandbox, target));
     }

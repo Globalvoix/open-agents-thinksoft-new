@@ -134,15 +134,37 @@ export function useCodeEditor({
       setState({ status: "starting" });
 
       try {
-        const response = await fetch(`/api/sessions/${sessionId}/code-editor`, {
-          method: "POST",
-        });
-        const body: unknown = await response.json().catch(() => null);
+        let response: Response | null = null;
+        let body: unknown = null;
+        let lastError: string = "Failed to launch code editor";
 
-        if (!response.ok) {
-          throw new Error(
-            getErrorMessage(body, "Failed to launch code editor"),
-          );
+        for (let attempt = 0; attempt < 3; attempt++) {
+          if (attempt > 0) {
+            await new Promise((r) => setTimeout(r, 2000));
+          }
+          try {
+            response = await fetch(`/api/sessions/${sessionId}/code-editor`, {
+              method: "POST",
+            });
+            body = await response.json().catch(() => null);
+          } catch {
+            lastError = "Network error connecting to code editor";
+            continue;
+          }
+
+          if (response.ok) {
+            break;
+          }
+
+          lastError = getErrorMessage(body, "Failed to launch code editor");
+
+          if (response.status !== 409 && response.status !== 500) {
+            break;
+          }
+        }
+
+        if (!response || !response.ok) {
+          throw new Error(lastError);
         }
 
         const launchResponse = parseLaunchResponse(body);

@@ -307,7 +307,7 @@ Always use a component library. Do NOT build UIs from raw divs and spans.
 - Always install the specific components you need: npx shadcn@latest add button card input label badge
 
 ### Alternative: HeroUI v3 (formerly NextUI)
-- Install: bun add @heroui/react framer-motion
+- Install: bun add @heroui/react (framer-motion is a peer dep — only add it in follow-up iterations, not on first build)
 - Use when the user specifically requests it or for more opinionated/animated components
 - Wrap the app in HeroUIProvider
 
@@ -427,7 +427,7 @@ Use framer-motion (needs JS and "use client"):
 
 - **3D scenes**: @react-three/fiber + @react-three/drei (bun add three @react-three/fiber @react-three/drei)
 - **Spline 3D**: @splinetool/react-spline (bun add @splinetool/react-spline) — embed Spline 3D scenes
-- **2D Canvas / generative**: Use CSS gradients, Tailwind, and framer-motion for most effects
+- **2D Canvas / generative**: Use CSS gradients and Tailwind for most effects (add framer-motion only in follow-up iterations)
 - **Glassmorphism**: backdrop-blur-md bg-white/10 border border-white/20
 - **Gradients**: Use Tailwind gradient classes: bg-gradient-to-br from-violet-600 to-indigo-600
 
@@ -435,7 +435,7 @@ Use framer-motion (needs JS and "use client"):
 
 ALWAYS install packages before using them. Use the project's package manager:
 - Detect from lock file: bun.lockb/bun.lock → bun add, pnpm-lock.yaml → pnpm add, package-lock.json → npm install
-- Install multiple at once: bun add framer-motion lucide-react @radix-ui/react-dialog
+- Install multiple at once: bun add lucide-react @radix-ui/react-dialog tailwindcss-animate
 - For shadcn: run npx shadcn@latest add <component-name> to add individual components
 - NEVER import a package without installing it first
 - After installing, verify the package appears in package.json before proceeding
@@ -460,8 +460,8 @@ When starting from scratch, always:
 1. Initialize Next.js: npx create-next-app@latest my-app --typescript --tailwind --app --no-src-dir
 2. Add shadcn: cd my-app && npx shadcn@latest init -d
 3. Add key components: npx shadcn@latest add button card badge input label separator
-4. Add lucide-react and framer-motion: bun add lucide-react framer-motion
-5. Build with the full stack from the very first component
+4. Add lucide-react: bun add lucide-react
+5. Build with the full stack from the very first component — do NOT install framer-motion on the initial build (see LAW 12 anti-pattern)
 
 Only deviate from this stack when the user explicitly requests a different technology, or when modifying an existing project that already uses something else.
 
@@ -794,11 +794,12 @@ Timing:
 - Entrance animations (scroll reveal): 400-600ms ease-out with slight upward Y movement (y: 20)
 - Page transitions: 200-250ms fade
 
-Framer Motion patterns:
+Framer Motion patterns (ONLY for follow-up iterations, never on first build):
 - Fade + slide up on scroll: initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
 - Stagger children: use variants with staggerChildren: 0.08
 - Hover lift: whileHover={{ y: -2, boxShadow: "0 8px 30px rgba(0,0,0,0.12)" }}
 - Smooth layout changes: wrap with AnimatePresence, use layout prop
+- ALWAYS add "use client" at the top of any file using framer-motion
 
 ---
 
@@ -829,6 +830,10 @@ The following are strictly forbidden. If you find yourself producing any of thes
 11. The invisible page — using framer-motion initial={{ opacity: 0 }} without "use client" or without a matching animate/whileInView prop. This is the #1 cause of blank white pages. The entire page content exists in the DOM but is permanently invisible because the SSR-rendered opacity:0 style never gets animated away. Check every single motion element before shipping.
 
 12. Using framer-motion on the first build — NEVER use framer-motion when building a page for the first time. Use CSS animations only (Tailwind animate-in classes). framer-motion can be added in a follow-up iteration after verifying the page renders correctly. This is the safest way to prevent blank pages.
+
+13. The "Live Preview" placeholder page — generating a page that just displays dev server status text like "Live Preview", "The page is currently running on the dev server", "Dev Server: http://localhost:3000", or "ready for deployment". This is NOT content. The user asked for an actual application/page with real UI components. Never output a status page — always build the actual product.
+
+14. Referencing localhost URLs in generated content — NEVER hardcode "http://localhost:3000" or any localhost URL in user-facing content. The dev server URL is provided by the sandbox environment. If you need to display a URL, use a relative path or the sandbox-provided SANDBOX_URL environment variable.
 
 ---
 
