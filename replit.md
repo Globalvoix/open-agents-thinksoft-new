@@ -188,6 +188,15 @@ Open Harness (formerly Open Agents) is a Next.js 16 Bun monorepo that provides a
 - **Fix D — Skills section reinforced** (`system-prompt.ts`): Bottom skills section now has a "CRITICAL" block repeating the mandatory triggers.
 - **Fix E — Tool description rewritten** (`skill.ts`): `skillTool` description changed from "Execute a skill within the main conversation" to "Execute a skill to load expert knowledge BEFORE writing code" with "MANDATORY skill loading triggers" list at the top of the tool description.
 
+### 19. Media Search Tool (`packages/agent/tools/media.ts`, `packages/agent/system-prompt.ts`)
+- **New `media_search` tool** registered in the agent's toolset — lets the agent search for high-quality stock photos and videos
+- **Pexels API integration**: When `PEXELS_API_KEY` is set, searches the Pexels API for photos and videos matching the agent's query. Returns direct CDN URLs, dimensions, alt text, photographer credits, and multiple size variants
+- **Curated fallback**: When no API key is set, falls back to a curated library of 60+ hand-picked Unsplash CDN URLs across 12 categories (technology, business, nature, people, food, architecture, abstract, workspace, health, travel, education, finance). Category matching uses keyword analysis of the search query
+- **Video support**: Searches for stock videos via Pexels, returns video URLs with poster images — perfect for hero section video backgrounds
+- **System prompt enforcement**: Agent is instructed to ALWAYS call `media_search` before writing `<img>` tags or `<video>` elements. The "Images" section was renamed to "Images & Videos — Use Real Media, Never Placeholders" with mandatory usage instructions
+- **Added to Mandatory Skill Usage section**: `media_search` is now listed alongside skill requirements as a mandatory pre-code step for any page with visual content
+- Tool executes server-side in the Next.js process (API key never exposed to sandbox)
+
 ## Architecture
 - **Frontend**: Next.js 16 App Router, React, Tailwind CSS
 - **Backend**: Next.js API routes + Vercel Workflows

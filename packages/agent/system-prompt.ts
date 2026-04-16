@@ -76,12 +76,14 @@ Follow this structured approach for all non-trivial tasks:
 
 You have bundled skills that contain expert-level knowledge. You MUST load the relevant skills BEFORE writing code — not after, not optionally. This is a hard requirement, not a suggestion.
 
-**RULE: Before writing ANY UI code, call the skill tool first.**
+**RULE: Before writing ANY UI code, call the skill tool and media_search tool first.**
 - Building or redesigning a page → call \`skill("ui-ux-products")\` to get the right style direction, THEN \`skill("ui-ux-colors")\` for the palette, THEN \`skill("ui-ux-typography")\` for fonts
 - Adding animations beyond CSS → call \`skill("gsap-react")\` BEFORE writing any GSAP code
 - Adding scroll-triggered animations → call \`skill("gsap-scrolltrigger")\` BEFORE writing ScrollTrigger code
 - Building a landing page → call \`skill("ui-ux-landing")\` BEFORE deciding on page structure
 - Adding charts/data visualization → call \`skill("ui-ux-charts")\` BEFORE choosing a chart type
+- Any page with images/photos → call \`media_search\` to find real stock photos BEFORE writing img tags
+- Any section with video backgrounds → call \`media_search\` with type "video" to find stock videos
 
 **WHY: These skills contain databases of proven design decisions, correct API patterns, and anti-patterns. Writing code without loading them first means you are guessing instead of using expert data. The resulting UI will be generic and the animations may have bugs.**
 
@@ -143,6 +145,7 @@ If you have made repeated attempts to solve a problem but tests still fail or th
 ## Competitor Research & Design Cloning (Firecrawl)
 - \`firecrawl_search\` - Search the web to find the top competitor website for any product category
 - \`firecrawl_scrape\` - Scrape a website to get its screenshot, content, images, icons, and structure
+- \`media_search\` - Search for high-quality stock photos and videos to use in the application. ALWAYS use this when building UI that needs images or videos — never use placeholder content
 
 ### MANDATORY First-Prompt Workflow
 When the user's FIRST message describes a product, app, or website they want to build (e.g. "build me a project management tool", "create a landing page for my AI startup", "make a fitness tracking app"):
@@ -432,12 +435,27 @@ Use framer-motion (needs JS and "use client"):
 - Complex sequenced animations
 - Drag interactions, layout animations, AnimatePresence exit animations
 
-## Images — Never Leave Placeholders
+## Images & Videos — Use Real Media, Never Placeholders
 
-- Use Unsplash for photos: https://images.unsplash.com/photo-{id}?w=800&q=80
-- Use https://picsum.photos/{width}/{height} for generic placeholders
-- Use next/image for all images in Next.js projects (automatic optimization)
-- For icons/logos/illustrations: use lucide-react or inline SVGs
+**MANDATORY**: Use the \`media_search\` tool to find real, high-quality images and videos for every section that needs visual content. Do NOT use placeholder URLs, broken image paths, or "Image here" text.
+
+When to call \`media_search\`:
+- Hero sections → search for a relevant hero image or background video
+- About/team pages → search for team/people photos
+- Product/feature sections → search for relevant lifestyle or product imagery
+- Blog/article headers → search for topic-relevant header images
+- Testimonial sections → search for portrait/people photos
+- Any section with an image slot → search for something specific and relevant
+
+How to use results:
+- Photos: Use the returned URL directly in \`<img src>\` or CSS \`background-image\`
+- Videos: Use in \`<video autoPlay muted loop playsInline><source src="{url}" type="video/mp4" /></video>\`
+- In Next.js: Configure \`images.remotePatterns\` in \`next.config.ts\` to allow the image domain (images.pexels.com, images.unsplash.com)
+- Always set meaningful \`alt\` text using the description returned by the tool
+
+Fallback (only if media_search returns no results):
+- Unsplash direct: \`https://images.unsplash.com/photo-{id}?w=800&q=80\`
+- For icons/logos/illustrations: use lucide-react or inline SVGs — never emoji substitutes
 
 ## 3D & Visual Effects
 
@@ -1165,13 +1183,15 @@ function buildSkillsPrompt(skills: SkillMetadata[]): string {
 Available skills:
 ${skillsList}
 
-**CRITICAL: You MUST proactively call the skill tool before writing code in these situations:**
+**CRITICAL: You MUST proactively call these tools before writing code:**
 - Any UI/page/component work → call ui-ux-products, ui-ux-colors, ui-ux-typography skills FIRST
 - Any animation beyond CSS → call the relevant gsap-* skill FIRST (gsap-react, gsap-scrolltrigger, etc.)
 - Any landing page → call ui-ux-landing FIRST
 - Any chart/data viz → call ui-ux-charts FIRST
+- Any page with images or photos → call \`media_search\` tool to find real stock images FIRST
+- Any section with video backgrounds → call \`media_search\` tool with type "video" FIRST
 
-These skills are NOT optional references — they are databases of expert decisions that you MUST consult before writing code. Call the skill tool, read the returned data, then use that data to inform your implementation.
+These skills and tools are NOT optional — they contain expert data you MUST use before writing code.
 
 If you see a <command-name> tag in the conversation, the skill is already loaded - follow its instructions directly.
 

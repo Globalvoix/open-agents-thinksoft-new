@@ -20,3 +20,4 @@ export { webFetchTool } from "./fetch";
 export { embedTool } from "./embed";
 export { thinkTool } from "./think";
 export { firecrawlScrapeTool, firecrawlSearchTool } from "./firecrawl";
+export { mediaSearchTool } from "./media";
