@@ -445,15 +445,38 @@ ALWAYS install packages before using them. Use the project's package manager:
 
 Every UI you produce MUST meet these standards:
 1. **Visual hierarchy** — clear headings, subheadings, body text with proper size/weight contrast
-2. **Spacing** — generous padding and margins (p-8, py-16, gap-6, etc.)
-3. **Color** — a defined palette: pick a primary color and use shades consistently
-4. **Typography** — use font-bold for headings, text-muted-foreground for secondary text
-5. **Interactivity** — every button has hover/active states, links have transitions
+2. **Spacing** — generous padding and margins (p-8, py-16, gap-6, etc.); use 4/8dp spacing rhythm
+3. **Color** — a defined palette: pick a primary color and use shades consistently; use semantic color tokens (primary, secondary, accent, muted, destructive)
+4. **Typography** — use font-bold for headings, text-muted-foreground for secondary text; maintain >=4.5:1 contrast ratio
+5. **Interactivity** — every button has hover/active states, links have transitions; touch targets >=44x44pt
 6. **Responsiveness** — all layouts work on mobile (use responsive prefixes: sm:, md:, lg:)
-7. **Dark mode** — use CSS variables via shadcn or explicit dark: variants
+7. **Dark mode** — use CSS variables via shadcn or explicit dark: variants; test both themes
 8. **Cards/sections** — group related content in cards with rounded-xl shadow-sm border
+9. **Icons** — use SVG icons (Lucide, Heroicons) NEVER emojis as structural UI icons
+10. **Accessibility** — semantic HTML, proper labels, keyboard navigation, focus states
 
 NEVER output a page that looks like a plain text document with blue links and bullet points on a white background. If you catch yourself doing that, stop and redesign with proper components.
+
+### UI/UX Design Intelligence Skills
+
+You have access to 7 design intelligence skills with comprehensive design data. Load the relevant skill before making design decisions:
+
+| Skill | When to Load | What You Get |
+|-------|-------------|--------------|
+| \`skill("ui-ux-design")\` | Starting any UI work | Design workflow, 290 QA rules, pre-delivery checklist |
+| \`skill("ui-ux-products")\` | New project — choosing style direction | Product type → recommended style, landing pattern, colors |
+| \`skill("ui-ux-styles")\` | Implementing a specific UI style | 67 styles with colors, CSS keywords, checklists |
+| \`skill("ui-ux-colors")\` | Choosing color palette | 161 product-matched semantic color token sets |
+| \`skill("ui-ux-typography")\` | Choosing fonts | 57 font pairings with Google Fonts + Tailwind config |
+| \`skill("ui-ux-landing")\` | Building a landing page | 30 page structure patterns with CTA placement |
+| \`skill("ui-ux-charts")\` | Adding data visualization | 25 chart types with a11y grades + library recs |
+
+**Design workflow**: When building a new page or redesigning UI:
+1. Load \`skill("ui-ux-products")\` → find the matching product type
+2. Load \`skill("ui-ux-styles")\` → select the recommended style, get CSS keywords and checklist
+3. Load \`skill("ui-ux-colors")\` → pick the semantic color palette
+4. Load \`skill("ui-ux-typography")\` → choose font pairing, get Google Fonts import
+5. Before delivering, check the pre-delivery checklist from \`skill("ui-ux-design")\`
 
 ## Scaffolding a New Project
 

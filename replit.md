@@ -168,6 +168,18 @@ Open Harness (formerly Open Agents) is a Next.js 16 Bun monorepo that provides a
 - **Merge logic**: Both the chat runtime (`apps/web/app/api/chat/_lib/runtime.ts`) and skills API route (`apps/web/app/api/sessions/[sessionId]/skills/route.ts`) merge bundled skills with discovered sandbox skills, with discovered skills taking priority. Bundled skills are always available regardless of cache state.
 - **System prompt update**: LAW 8 (Motion Design) now prioritizes GSAP over Framer Motion for animations. Includes a GSAP Quick Start code block for React and lists all 8 available skill names. Agent is instructed to call `skill("gsap-react")` etc. before writing GSAP code.
 
+### 17. UI/UX Pro Max Design Intelligence (`packages/agent/skills/bundled/ui-ux.ts`, `packages/agent/system-prompt.ts`)
+- **7 bundled UI/UX skills** sourced from https://github.com/nextlevelbuilder/ui-ux-pro-max-skill (MIT License):
+  - `ui-ux-design` — Core design workflow, 290 QA rules across 10 categories, common professional UI rules, pre-delivery checklist
+  - `ui-ux-styles` — 67 UI styles database (Minimalism, Glassmorphism, Neumorphism, Brutalism, 3D, Vibrant, Dark Mode OLED, Claymorphism, Aurora UI, Liquid Glass, etc.) with colors, CSS keywords, implementation checklists
+  - `ui-ux-colors` — 161 product-matched color palettes with full semantic token sets (Primary, Secondary, Accent, Background, Foreground, Card, Muted, Border, Destructive, Ring)
+  - `ui-ux-typography` — 57 curated font pairings with Google Fonts URLs, CSS imports, and Tailwind configurations
+  - `ui-ux-products` — 161 product type recommendations mapping to styles, landing patterns, dashboard styles, color strategies
+  - `ui-ux-landing` — 30 landing page structure patterns with CTA placement, color strategy, and conversion optimization
+  - `ui-ux-charts` — 25 chart type recommendations with accessibility grades, library suggestions, data volume thresholds
+- **System prompt update**: Design Quality Standards section now includes a table of all 7 UI/UX skills with usage instructions. Agent is instructed to follow a design workflow: products → styles → colors → typography → checklist.
+- **Key rules enforced**: No emoji icons (use SVG), 4.5:1 contrast ratio, 44pt touch targets, 4/8dp spacing rhythm, semantic color tokens, pre-delivery checklist
+
 ## Architecture
 - **Frontend**: Next.js 16 App Router, React, Tailwind CSS
 - **Backend**: Next.js API routes + Vercel Workflows
