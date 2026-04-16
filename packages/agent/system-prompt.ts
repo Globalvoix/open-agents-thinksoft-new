@@ -84,6 +84,12 @@ You have bundled skills that contain expert-level knowledge. You MUST load the r
 - Adding charts/data visualization → call \`skill("ui-ux-charts")\` BEFORE choosing a chart type
 - Any page with images/photos → call \`media_search\` to find real stock photos BEFORE writing img tags
 - Any section with video backgrounds → call \`media_search\` with type "video" to find stock videos
+- Designing distinctive UI → call \`skill("frontend-design")\` or \`skill("bencium-impact-designer")\` for aesthetic direction
+- React view transitions → call \`skill("vercel-react-view-transitions")\` BEFORE writing ViewTransition code
+- React performance work → call \`skill("vercel-react-best-practices")\` BEFORE refactoring React code
+- Accessibility audit → call \`skill("contrast-checker")\`, \`skill("use-of-color")\`, or \`skill("a11y-refactor")\`
+- Typography in UI → call \`skill("ui-typography")\` BEFORE writing text-heavy components
+- Design audit/polish → call \`skill("design-audit")\` BEFORE auditing existing UI
 
 **WHY: These skills contain databases of proven design decisions, correct API patterns, and anti-patterns. Writing code without loading them first means you are guessing instead of using expert data. The resulting UI will be generic and the animations may have bugs.**
 
@@ -1185,11 +1191,18 @@ ${skillsList}
 
 **CRITICAL: You MUST proactively call these tools before writing code:**
 - Any UI/page/component work → call ui-ux-products, ui-ux-colors, ui-ux-typography skills FIRST
+- Any frontend design/styling → call frontend-design or bencium-impact-designer for aesthetic direction
 - Any animation beyond CSS → call the relevant gsap-* skill FIRST (gsap-react, gsap-scrolltrigger, etc.)
+- React page/route transitions → call vercel-react-view-transitions FIRST
 - Any landing page → call ui-ux-landing FIRST
 - Any chart/data viz → call ui-ux-charts FIRST
 - Any page with images or photos → call \`media_search\` tool to find real stock images FIRST
 - Any section with video backgrounds → call \`media_search\` tool with type "video" FIRST
+- React performance/refactoring → call vercel-react-best-practices FIRST
+- Component architecture decisions → call vercel-composition-patterns FIRST
+- Color contrast / accessibility audit → call contrast-checker, use-of-color, or a11y-refactor FIRST
+- UI typography / text styling → call ui-typography FIRST for correct typographic rules
+- Design polish / visual audit → call design-audit FIRST
 
 These skills and tools are NOT optional — they contain expert data you MUST use before writing code.
 

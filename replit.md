@@ -197,6 +197,25 @@ Open Harness (formerly Open Agents) is a Next.js 16 Bun monorepo that provides a
 - **Added to Mandatory Skill Usage section**: `media_search` is now listed alongside skill requirements as a mandatory pre-code step for any page with visual content
 - Tool executes server-side in the Next.js process (API key never exposed to sandbox)
 
+### 20. Community Bundled Skills (`packages/agent/skills/bundled/anthropics.ts`, `vercel.ts`, `bencium.ts`, `accesslint.ts`)
+- **10 new bundled skills** integrated from 4 community sources, bringing total bundled skills to 25+:
+- **Anthropic** (`anthropics.ts`):
+  - `frontend-design` — Distinctive, production-grade frontend design with bold aesthetic direction. Anti-"AI slop" guidelines
+- **Vercel** (`vercel.ts`):
+  - `vercel-react-best-practices` — 70 React/Next.js performance rules across 8 categories (waterfalls, bundle size, server-side, re-renders, rendering, JS perf, advanced patterns)
+  - `vercel-react-view-transitions` — React View Transition API guide (<ViewTransition>, addTransitionType, CSS pseudo-elements, shared element morphs, Next.js integration)
+  - `vercel-composition-patterns` — React composition patterns (compound components, boolean prop avoidance, context providers, React 19 APIs)
+- **Bencium** (`bencium.ts`):
+  - `bencium-impact-designer` — Comprehensive innovative design skill with 30+ aesthetic tone options, anti-sameness protocol, visual effects checklists, UX patterns, interaction design
+  - `design-audit` — Systematic UI/UX visual audit skill with 15-dimension audit protocol, reduction filter, 3-phase implementation plan
+  - `ui-typography` — Professional typography rules from Butterick's Practical Typography. Covers curly quotes, dashes, spacing, hierarchy, responsive web typography, JSX/React character handling
+- **AccessLint** (`accesslint.ts`):
+  - `contrast-checker` — WCAG 2.1 color contrast analyzer (text 4.5:1, large text 3:1, UI components 3:1). Adapted from MCP tool references to manual analysis guidelines
+  - `use-of-color` — WCAG 1.4.1 Use of Color analyzer. Detects 7 violation types (links, form validation, required fields, status indicators, hover/focus, data viz, color-coded categories)
+  - `a11y-refactor` — Accessibility refactoring specialist. Simple fixes (alt text, ARIA labels) through complex fixes (focus traps, keyboard navigation, accessible tabs/accordions)
+- **System prompt updated**: Both the Mandatory Skill Usage section and the CRITICAL skills block now reference all new skills with specific trigger conditions
+- **Sources**: anthropics/skills, vercel-labs/agent-skills, bencium/bencium-marketplace, AccessLint/claude-marketplace
+
 ## Architecture
 - **Frontend**: Next.js 16 App Router, React, Tailwind CSS
 - **Backend**: Next.js API routes + Vercel Workflows
